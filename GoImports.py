@@ -12,7 +12,7 @@ class GoImportsCommand(sublime_plugin.TextCommand):
     def run(self, edit, saving=False):
         selection = sublime.Region(0, self.view.size())
         content = self.view.substr(selection)
-        process = subprocess.Popen(['/xdisk/devel/go/bin/goimports'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        process = subprocess.Popen(['goimports'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
         process.stdin.write(bytes(content, 'utf8'))
         process.stdin.close()
