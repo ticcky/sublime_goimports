@@ -12,7 +12,7 @@ MY_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def install():
     script = [
-        "GOPATH='%s' go get github.com/bradfitz/goimports" % MY_PATH
+        "GOPATH='%s' go get code.google.com/p/go.tools/cmd/goimports" % MY_PATH
     ]
     for ln in script:
         p = subprocess.Popen(ln, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
