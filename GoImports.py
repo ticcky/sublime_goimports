@@ -8,11 +8,12 @@ import subprocess
 import io
 import os
 
-MY_PATH = os.path.dirname(os.path.realpath(__file__))
+GOPATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "gopath")
+GOIMPORTS = os.path.join(GOPATH, "bin", "goimports")
 
 def install():
     script = [
-        "GOPATH='%s' go get code.google.com/p/go.tools/cmd/goimports" % MY_PATH
+        "GOPATH='%s' go get code.google.com/p/go.tools/cmd/goimports" % GOPATH
     ]
     for ln in script:
         p = subprocess.Popen(ln, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -21,7 +22,7 @@ def install():
             print(p.stdout.read())
             print(p.stderr.read())
 
-if not os.path.exists(os.path.join(MY_PATH, "bin/goimports")):
+if not os.path.exists(GOIMPORTS):
     install()
 
 s = sublime.load_settings("GoImports.sublime-settings")
@@ -34,7 +35,7 @@ class GoImportsCommand(sublime_plugin.TextCommand):
         content = self.view.substr(selection)
 
         # Shove that content down goimports process's throat.
-        process = subprocess.Popen([os.path.join(MY_PATH, "bin/goimports")],
+        process = subprocess.Popen([GOIMPORTS],
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         process.stdin.write(bytes(content, 'utf8'))
         process.stdin.close()
