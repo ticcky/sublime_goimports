@@ -35,10 +35,14 @@ class GoImportsCommand(sublime_plugin.TextCommand):
 
         # Shove that content down goimports process's throat.
         process = subprocess.Popen([os.path.join(MY_PATH, "bin/goimports")],
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.stdin.write(bytes(content, 'utf8'))
         process.stdin.close()
         process.wait()
-
-        # Put the result back.
-        self.view.replace(edit, selection, process.stdout.read().decode('utf8'))
+        
+        # Check and see if we got an error
+        error = process.stderr.read().decode('utf8')
+        if error:
+            print("error: " + error)
+        else:
+            self.view.replace(edit, selection, process.stdout.read().decode('utf8'))
