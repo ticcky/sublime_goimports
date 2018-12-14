@@ -9,6 +9,7 @@ import io
 import os
 
 MY_PATH = os.path.dirname(os.path.realpath(__file__))
+bin_path = os.path.join(MY_PATH, "bin/goimports")
 
 def install():
     script = [
@@ -21,10 +22,12 @@ def install():
             print(p.stdout.read())
             print(p.stderr.read())
 
-if not os.path.exists(os.path.join(MY_PATH, "bin/goimports")):
-    install()
-
 s = sublime.load_settings("GoImports.sublime-settings")
+settings_path = s.get("goimports_bin_path")
+if settings_path:
+    bin_path = settings_path
+elif not os.path.exists(bin_path):
+    install()
 
 
 class GoImportsCommand(sublime_plugin.TextCommand):
@@ -34,12 +37,12 @@ class GoImportsCommand(sublime_plugin.TextCommand):
         content = self.view.substr(selection)
 
         # Shove that content down goimports process's throat.
-        process = subprocess.Popen([os.path.join(MY_PATH, "bin/goimports")],
+        process = subprocess.Popen([bin_path],
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.stdin.write(bytes(content, 'utf8'))
         process.stdin.close()
         process.wait()
-        
+
         # Check and see if we got an error
         error = process.stderr.read().decode('utf8')
         if error:
